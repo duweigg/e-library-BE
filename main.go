@@ -26,9 +26,10 @@ func main() {
 
 	bookRouter := router.Group("/books")
 	{
-		bookRouter.POST("/borrow", middlewares.CheckAuth, controllers.CreateUser)
-		bookRouter.POST("/extend", middlewares.CheckAuth, controllers.SignIn)
-		bookRouter.POST("/return", middlewares.CheckAuth, controllers.GetUserInfo)
+		bookRouter.GET("/list", controllers.GetBookList)
+		bookRouter.POST("/borrow", middlewares.CheckAuth, controllers.BorrowBooks)
+		bookRouter.POST("/extend", middlewares.CheckAuth, controllers.ExtendBooks)
+		bookRouter.POST("/return", middlewares.CheckAuth, controllers.ReturnBooks)
 	}
 	router.Run()
 }
