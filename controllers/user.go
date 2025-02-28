@@ -82,7 +82,7 @@ func SignIn(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
 	}
 
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
 }
@@ -90,7 +90,7 @@ func SignIn(c *gin.Context) {
 
 func GetUserInfo(c *gin.Context) {
 	user, _ := c.Get("user")
-	c.JSON(200, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
 }
