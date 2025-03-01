@@ -64,7 +64,12 @@ func CheckAuth(c *gin.Context) {
 		return
 	}
 
-	c.Set("currentUser", user)
+	var userResponse = models.UserResponse{
+		ID:       user.ID,
+		Nickname: user.Nickname,
+	}
+
+	c.Set("user", userResponse)
 
 	c.Next()
 
