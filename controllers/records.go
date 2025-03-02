@@ -64,8 +64,9 @@ func (rc *RecordController) GetRecordList(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch records"})
 		return
 	}
+
 	if len(records) == 0 {
-		log.Println("No records found for the given filters")
+		log.Printf("No bookType found with search: %s", recordSearchRequest.Title)
 		c.JSON(http.StatusNotFound, gin.H{"error": "No records found"})
 		return
 	}
