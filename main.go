@@ -26,11 +26,12 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	userController := controllers.NewUserController(initializers.DB)
 	userRouter := router.Group("/user")
 	{
-		userRouter.POST("/signup", controllers.CreateUser)
-		userRouter.POST("/signin", controllers.SignIn)
-		userRouter.GET("/info", middlewares.CheckAuth, controllers.GetUserInfo)
+		userRouter.POST("/signup", userController.CreateUser)
+		userRouter.POST("/signin", userController.SignIn)
+		userRouter.GET("/info", middlewares.CheckAuth, userController.GetUserInfo)
 	}
 
 	bookController := controllers.NewBookController(initializers.DB)
