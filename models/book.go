@@ -27,3 +27,12 @@ type BookRequest struct {
 	Title string `json:"title"`
 	Pagination
 }
+
+func (bt *BookType) ToResponse(totalCount, availableCount int) BookResponse {
+	return BookResponse{
+		ID:             bt.ID,
+		Name:           bt.Title,
+		TotalCount:     totalCount,
+		AvailableCount: availableCount,
+	}
+}

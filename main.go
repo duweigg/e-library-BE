@@ -13,7 +13,6 @@ import (
 func init() {
 	initializers.GetEnvs()
 	initializers.ConnectDB()
-
 }
 
 func main() {
@@ -34,16 +33,19 @@ func main() {
 		userRouter.GET("/info", middlewares.CheckAuth, controllers.GetUserInfo)
 	}
 
+	bookController := controllers.NewBookController(initializers.DB)
 	bookRouter := router.Group("/book")
 	{
-		bookRouter.POST("/list", controllers.GetBookList)
-		bookRouter.POST("/borrow", middlewares.CheckAuth, controllers.BorrowBooks)
+		bookRouter.POST("/list", bookController.GetBookList)
+		bookRouter.POST("/borrow", middlewares.CheckAuth, bookController.BorrowBooks)
 	}
+
+	recordController := controllers.NewRecordController(initializers.DB)
 	recordRouter := router.Group("/record")
 	{
-		recordRouter.POST("/list", middlewares.CheckAuth, controllers.GetRecordList)
-		recordRouter.POST("/extend", middlewares.CheckAuth, controllers.ExtendRecords)
-		recordRouter.POST("/return", middlewares.CheckAuth, controllers.ReturnRecords)
+		recordRouter.POST("/list", middlewares.CheckAuth, recordController.GetRecordList)
+		recordRouter.POST("/extend", middlewares.CheckAuth, recordController.ExtendRecords)
+		recordRouter.POST("/return", middlewares.CheckAuth, recordController.ReturnRecords)
 	}
 	router.Run()
 }
