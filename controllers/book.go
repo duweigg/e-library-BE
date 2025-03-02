@@ -45,7 +45,8 @@ func (bc *BookController) GetBookList(c *gin.Context) {
 	}
 
 	if len(bookTypes) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No books found"})
+		log.Printf("No bookType found with search: %s", bookRequest.Title)
+		c.JSON(http.StatusOK, gin.H{"error": "No books found"})
 		return
 	}
 
