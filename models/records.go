@@ -14,12 +14,13 @@ type Record struct {
 	CommonTime
 }
 type RecordResponse struct {
-	ID        uint      `json:"id"`
-	Name      string    `json:"name"`
-	Title     string    `json:"title"`
-	CreatedAt time.Time `json:"created_at"`
-	DueAt     time.Time `json:"due_at"`
-	Status    string    `json:"status"`
+	ID         uint       `json:"id"`
+	Name       string     `json:"name"`
+	Title      string     `json:"title"`
+	ReturnedAt *time.Time `json:"returned_at"`
+	CreatedAt  time.Time  `json:"created_at"`
+	DueAt      time.Time  `json:"due_at"`
+	Status     string     `json:"status"`
 }
 type RecordRequest struct {
 	IDs []uint `json:"ids"`
@@ -42,12 +43,13 @@ func (r *Record) ToResponse() (rr RecordResponse) {
 	}
 
 	rr = RecordResponse{
-		ID:        r.ID,
-		Name:      r.User.Nickname,
-		Title:     r.Book.BookType.Title,
-		CreatedAt: r.CreatedAt,
-		DueAt:     r.DueAt,
-		Status:    status,
+		ID:         r.ID,
+		Name:       r.User.Nickname,
+		Title:      r.Book.BookType.Title,
+		ReturnedAt: r.ReturnedAt,
+		CreatedAt:  r.CreatedAt,
+		DueAt:      r.DueAt,
+		Status:     status,
 	}
 	return rr
 }
