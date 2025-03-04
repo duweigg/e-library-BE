@@ -101,7 +101,7 @@ func (rc *RecordController) ExtendRecords(c *gin.Context) {
 		return
 	}
 	userData, _ := user.(models.UserResponse)
-	// need to verify if the record belong to user
+	// need to verify if those are ectendable
 	var recordIDs models.RecordRequest
 	if err := c.ShouldBindJSON(&recordIDs); err != nil {
 		log.Printf("Invalid extend request payload: %v\n", err)
@@ -113,7 +113,7 @@ func (rc *RecordController) ExtendRecords(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No record IDs provided"})
 		return
 	}
-	// Fetch records to verify ownership
+	// Fetch records to verify if those are ectendable
 	var records []models.Record
 	if err := rc.DB.Where("id IN ?", recordIDs.IDs).Find(&records).Error; err != nil {
 		log.Printf("Failed to fetch records for extend: %v\n", err)
@@ -121,11 +121,23 @@ func (rc *RecordController) ExtendRecords(c *gin.Context) {
 		return
 	}
 
-	// Ensure all records belong to the user
 	for _, record := range records {
+		// Ensure all records belong to the user
 		if record.UserID != userData.ID {
 			log.Printf("User %d attempted to extend non-owned record %d\n", userData.ID, record.ID)
-			c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to extend these records"})
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to extend these books"})
+			return
+		}
+		// Ensure all records are still open (not returned)
+		if record.IsClosed {
+			log.Printf("User %d attempted to extend returned record %d\n", userData.ID, record.ID)
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to extend these books"})
+			return
+		}
+		// Ensure all records are not overdue
+		if record.DueAt.Before(time.Now()) {
+			log.Printf("User %d attempted to extend overdue record %d\n", userData.ID, record.ID)
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to extend these books"})
 			return
 		}
 	}
@@ -174,11 +186,17 @@ func (rc *RecordController) ReturnRecords(c *gin.Context) {
 		return
 	}
 
-	// Ensure all records belong to the user
 	for _, record := range recordsChecking {
+		// Ensure all records belong to the user
 		if record.UserID != userData.ID {
 			log.Printf("User %d attempted to return non-owned record %d\n", userData.ID, record.ID)
 			c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to return these records"})
+			return
+		}
+		// Ensure all records are still open (not returned)
+		if record.IsClosed {
+			log.Printf("User %d attempted to return closed record %d\n", userData.ID, record.ID)
+			c.JSON(http.StatusForbidden, gin.H{"error": "You are not allowed to extend these books"})
 			return
 		}
 	}

@@ -34,8 +34,13 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	}
 
 	// Check if the username already exists
-	var existingUser models.User
-	if err := uc.DB.Where("username = ?", signUpPayload.Username).First(&existingUser).Error; err == nil {
+	count := int64(0)
+	if err := uc.DB.Model(&models.User{}).Where("username = ?", signUpPayload.Username).Count(&count).Error; err != nil {
+		log.Printf("Error counting existing user: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check username exists"})
+		return
+	}
+	if count > 0 {
 		log.Printf("Username already in use: %s\n", signUpPayload.Username)
 		c.JSON(http.StatusConflict, gin.H{"error": "Username already in use"})
 		return

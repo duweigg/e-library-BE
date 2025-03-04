@@ -6,7 +6,7 @@ type Record struct {
 	ID         uint
 	UserID     uint
 	BookID     uint
-	ReturnedAt time.Time
+	ReturnedAt *time.Time
 	DueAt      time.Time
 	User       User `gorm:"foreignKey:UserID"` // Automatically fetch User
 	Book       Book `gorm:"foreignKey:BookID"` // Automatically fetch Book
